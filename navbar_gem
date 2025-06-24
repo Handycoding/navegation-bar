@@ -1,4 +1,4 @@
-// src/components/Navbar.jsx (Versión Final de Estilos)
+// src/components/Navbar.jsx
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -17,35 +17,28 @@ function classNames(...classes) {
 
 export default function Navbar() {
   return (
-    <nav className="relative bg-white bg-opacity-80 shadow-sm font-familjen-grotesk">
-      <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        <div className="relative flex h-24 items-center justify-between">
-          {/* Logo/Name - Norah Horowitz, Ph.D. */}
-          <div className="flex-shrink-0 flex items-center">
-            <span className="text-xl font-normal text-gray-700 whitespace-nowrap">
-              Norah Horowitz, Ph.D.
-            </span>
-          </div>
-
-          {/* Enlaces de navegación */}
-          <div className="flex space-x-8">
-            {navigation.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.href}
-                className={({ isActive }) =>
-                  classNames(
-                    isActive
-                      ? 'text-gray-900 font-semibold border-b-2 border-gray-900'
-                      : 'text-gray-600 hover:text-gray-900', // <-- Aquí Tailwind aplicará el color gris
-                    'text-base tracking-wide px-1 py-1 font-light whitespace-nowrap'
-                  )
-                }
-              >
-                {item.name}
-              </NavLink>
-            ))}
-          </div>
+    <nav className="bg-gray-100 shadow-md font-sans">
+      <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+        <div className="text-xl font-semibold text-gray-800">
+          SapiensLog
+        </div>
+        <div className="flex space-x-10">
+          {navigation.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.href}
+              className={({ isActive }) =>
+                classNames(
+                  isActive
+                    ? 'text-gray-900 font-bold border-b-2 border-gray-900'
+                    : 'text-gray-600 hover:text-gray-800',
+                  'text-base tracking-wide px-2 py-1 font-light whitespace-nowrap'
+                )
+              }
+            >
+              {item.name}
+            </NavLink>
+          ))}
         </div>
       </div>
     </nav>
