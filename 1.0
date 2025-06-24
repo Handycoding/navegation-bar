@@ -1,0 +1,67 @@
+## import { NavLink } from 'react-router-dom';
+
+export default function Navbar() {
+  return (
+    <nav className="bg-green-700 text-white px-6 py-4 shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Logo o título */}
+        <div className="text-2xl font-bold">Árbol del Conocimiento 🌳</div>
+
+        {/* Menú */}
+        <ul className="flex space-x-6 text-lg">
+          <li>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? 'underline font-semibold' : 'hover:underline'
+              }
+              end
+            >
+              Inicio
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/recomendaciones"
+              className={({ isActive }) =>
+                isActive ? 'underline font-semibold' : 'hover:underline'
+              }
+            >
+              Recomendaciones
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/biblioteca"
+              className={({ isActive }) =>
+                isActive ? 'underline font-semibold' : 'hover:underline'
+              }
+            >
+              Biblioteca
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/agora"
+              className={({ isActive }) =>
+                isActive ? 'underline font-semibold' : 'hover:underline'
+              }
+            >
+              Ágora Comunidad
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/registro"
+              className={({ isActive }) =>
+                isActive ? 'underline font-semibold' : 'hover:underline'
+              }
+            >
+              Registrarme
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  );
+}
