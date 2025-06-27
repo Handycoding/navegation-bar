@@ -1,0 +1,163 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import logox from '../assets/logox.png';
+import { FaHome, FaAward, FaBook, FaLandmark, FaUserCircle, FaCheckCircle } from 'react-icons/fa'; // Added FaCheckCircle
+
+// New navigation structure
+const navigationLinks = [
+  { name: 'Árbol del Conocimiento', href: '/', icon: FaHome, originalName: 'Árbol del Conocimiento' }, // Home
+  { name: 'Recomendaciones', href: '/recomendaciones', icon: FaAward, originalName: 'Recomendaciones' }, // Using FaAward as placeholder
+  { name: 'Biblioteca y Tracker', href: '/biblioteca', icon: FaBook, originalName: 'Biblioteca<br />y Tracker' },
+  { name: 'Agora Community', href: '/agora-community', icon: FaLandmark, originalName: 'Agora<br />Community' },
+  { name: 'Registrarme o Iniciar Sesión', href: '/auth', icon: FaUserCircle, originalName: 'Registrarme o<br />Iniciar Sesión' },
+];
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
+export default function Navbar() {
+  const [activeItemIndex, setActiveItemIndex] = useState(0); // Default to first item
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, opacity: 0, top: 0 }); // Added top
+  const navLinkRefs = useRef([]);
+  const location = useLocation();
+  const linksContainerRef = useRef(null); // Renamed from navContainerRef for clarity
+
+  // Effect to update activeItemIndex based on current route
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const activeIndex = navigationLinks.findIndex(link => link.href === currentPath);
+    if (activeIndex !== -1) {
+      setActiveItemIndex(activeIndex);
+    } else if (currentPath.startsWith('/arbol')) { // Handle /arbol as home if needed, or specific logic
+        const homeIndex = navigationLinks.findIndex(link => link.href === '/');
+        if (homeIndex !== -1) setActiveItemIndex(homeIndex);
+    } else {
+        // Fallback or set to a default if no match, e.g. first item
+        setActiveItemIndex(0);
+    }
+  }, [location.pathname]);
+
+  // Effect to recalculate and set refs array size when navigationLinks change (e.g. dynamic links)
+   useEffect(() => {
+    navLinkRefs.current = navLinkRefs.current.slice(0, navigationLinks.length);
+  }, [navigationLinks]);
+
+
+  // Effect to calculate indicator position
+  useEffect(() => {
+    if (linksContainerRef.current && navLinkRefs.current[activeItemIndex]) {
+      const containerRect = linksContainerRef.current.getBoundingClientRect();
+      const activeLinkRect = navLinkRefs.current[activeItemIndex].getBoundingClientRect();
+      
+      const left = activeLinkRect.left - containerRect.left + (activeLinkRect.width / 2);
+      // Position the center of the circle approx 10px from the top of the links container.
+      // This allows part of it to "stick out" when combined with translateY(-50%)
+      // and the navbar's paddingTop.
+      const topValue = 10; // px
+      setIndicatorStyle({ left: left, opacity: 1, top: topValue }); 
+    } else {
+      setIndicatorStyle({ left: 0, opacity: 0, top: 0 });
+    }
+  }, [activeItemIndex, linksContainerRef.current, navigationLinks.length]); // Added navigationLinks.length to re-run if items change
+
+  // Styles for the main navbar container - will include wavy top later
+  const navbarStyle = {
+    background: 'linear-gradient(to right, #431DA0, #E091DD)', // Existing gradient
+    height: 'auto', // Adjust height to fit content (icons + text)
+    minHeight: '60px', // Minimum height
+    paddingTop: '20px', // Space for circle to stick out, or for wave
+    position: 'relative', // For pseudo-elements for wave and absolute positioning of circle
+    overflow: 'visible', // To allow circle to stick out
+  };
+
+  // Inline style for the moving circle indicator
+  const circleIndicatorStyle = {
+    position: 'absolute',
+    left: `${indicatorStyle.left}px`,
+    top: `${indicatorStyle.top}px`, // This will be adjusted e.g. '-15px' to stick out
+    width: '0.5cm',
+    height: '0.5cm',
+    backgroundColor: 'linear-gradient(to right, #431DA0, #E091DD)', // Same as navbar for now
+    borderRadius: '50%',
+    transform: 'translateX(-50%) translateY(-50%)', // Center on point, and half sticking out
+    transition: 'left 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.2s ease-in-out', // Smooth, bouncy transition
+    opacity: indicatorStyle.opacity,
+    zIndex: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0px -2px 10px rgba(0,0,0,0.2)', // Elevation
+  };
+  
+  // Determine the active icon
+  const ActiveIcon = navigationLinks[activeItemIndex]?.icon;
+
+  return (
+    <nav
+      className="navbar w-full font-sans shadow-md" // Removed fixed height from class
+      style={navbarStyle}
+    >
+      <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between relative"> {/* Added relative for absolute logo positioning within this container */}
+        {/* Logo, positioned to the left */}
+        <img 
+          src={logox} 
+          alt="SapiensLog Logo" 
+          style={{ 
+            width: '1.35cm', // Approx 51px
+            height: '1.35cm', // Approx 51px
+            position: 'absolute', // Position it within the .max-w-7xl container
+            left: '24px', // px-6 is 24px
+            top: '50%', 
+            transform: 'translateY(-50%)',
+            zIndex: 25 // Ensure logo is above navbar background effects but potentially below modal dialogs etc.
+          }} 
+        />
+      
+        <div 
+          ref={linksContainerRef}
+        className="max-w-7xl mx-auto px-6 h-full flex items-end justify-around relative" // items-end for text below icon area
+        style={{ minHeight: '50px'}} // Ensure container has height for alignment
+      >
+        {/* Moving Circular Indicator */}
+        <div style={circleIndicatorStyle}>
+          {ActiveIcon && <ActiveIcon style={{ color: 'purple', fontSize: '1em' }} />} 
+        </div>
+
+        {navigationLinks.map((item, index) => {
+          // Adjust spacing for specific items
+          let itemSpecificClass = 'px-2 py-2'; // Default horizontal padding: px-2
+          if (item.name === 'Biblioteca y Tracker' || item.name === 'Agora Community' || item.name === 'Registrarme o Iniciar Sesión') {
+            itemSpecificClass = 'px-1 py-2'; // Reduced horizontal padding for these items
+          }
+          // No specific adjustment for 'Recomendaciones' for now, relies on justify-around
+
+          return (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              ref={el => navLinkRefs.current[index] = el}
+              className={({ isActive }) => // isActive can be used to style text if needed
+                classNames(
+                  'flex flex-col items-center justify-center text-center relative', // flex-col for icon above text
+                  'text-white hover:text-gray-300 transition-colors duration-150',
+                  itemSpecificClass,
+                  isActive ? 'font-semibold' : 'font-light'
+                )
+              }
+              onClick={() => setActiveItemIndex(index)} // Update active index on click
+              style={{ zIndex: 1 }} // Ensure links are clickable above potential pseudo-elements
+            >
+              {/* Icon Placeholder - Icons are primarily in the moving circle */}
+              <div style={{ height: '0.5cm', width: '0.5cm', marginBottom: '4px' }}>
+                {/* Intentionally empty or a very dim placeholder if item is not active */}
+              </div>
+              <span className="text-xs whitespace-nowrap" dangerouslySetInnerHTML={{__html: item.originalName.replace(/<br \/>/g, ' ').replace(/<br\/>/g, ' ') }} />
+            </NavLink>
+          );
+        })}
+         </div> 
+      </div> 
+    </nav>
+  );
+}
