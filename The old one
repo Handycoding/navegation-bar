@@ -1,0 +1,67 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import logox from '../assets/logox.png';
+
+const navigation = [
+  { name: 'Arbol del<br />conocimiento', href: '/arbol' },
+  { name: 'Recomendaciones', href: '/recomendaciones' },
+  { name: 'Biblioteca<br />y Tracker', href: '/biblioteca' },
+  { name: 'Agora<br />Community', href: '/agora-community' },
+  { name: 'Registrarme o<br />Iniciar Sesión', href: '/auth' },
+];
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
+export default function Navbar() {
+  return (
+    <nav
+      className="navbar w-full shadow-md font-sans"
+      style={{ backgroundColor: '#191970', height: '1.5cm' }}
+    >
+      <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+
+        {/* Logo + Inicio (alineados al centro) */}
+        <div className="flex items-center h-full"> {/* Removed space-x-10 here */}
+          <img src={logox} alt="SapiensLog Logo" style={{ width: '1.35cm', height: '1.5cm' }} />
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              classNames(
+                'text-white',
+                isActive
+                  ? 'font-semibold border-b-2 border-white'
+                  : 'hover:text-gray-200',
+                'text-sm tracking-wide px-2 py-1 font-light'
+              )
+            }
+            style={{ marginLeft: '3cm' }} // Add this line for 3cm separation
+          >
+            Arbol del Conocimiento
+          </NavLink>
+        </div>
+
+        {/* Menú centrado (alineado verticalmente) */}
+        <div className="flex items-center justify-evenly flex-1 h-full">
+          {navigation.slice(1).map((item) => (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) =>
+                classNames(
+                  'text-white',
+                  isActive
+                    ? 'font-semibold border-b-2 border-white'
+                    : 'hover:text-gray-200',
+                  'text-sm text-center tracking-wide px-2 py-1 font-light whitespace-nowrap'
+                )
+              }
+              dangerouslySetInnerHTML={{ __html: item.name }}
+            />
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
